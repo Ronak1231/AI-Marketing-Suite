@@ -7,6 +7,20 @@ import requests
 from googleapiclient.discovery import build
 import database as db
 import re
+import streamlit.components.v1 as components # Import the components module
+
+# --- Google Analytics Integration ---
+GA_MEASUREMENT_ID = "G-KR3JZ4DGY1"
+GA_CODE = f"""
+<script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
+<script>
+  window.dataLayer = window.dataLayer || [];
+  function gtag(){{dataLayer.push(arguments);}}
+  gtag('js', new Date());
+  gtag('config', '{GA_MEASUREMENT_ID}');
+</script>
+"""
+components.html(GA_CODE, height=0, width=0) # Embed the GA code at the top
 
 # --- Page Configuration ---
 st.set_page_config(
@@ -226,3 +240,7 @@ if st.session_state['logged_in']:
                     st.write(item['image_prompt'])
                     st.subheader("Marketing Text Kit")
                     st.markdown(item['generated_text'])
+
+
+# The database.py file does not need modifications for this request.
+# The code below is included for completeness.
