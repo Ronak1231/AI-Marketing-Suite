@@ -33,7 +33,7 @@ st.set_page_config(
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
     # --- FINAL CHANGE: Using the best free-tier model for deployment ---
-    text_model = genai.GenerativeModel("gemini-1.5-flash-latest") 
+    text_model = genai.GenerativeModel("gemini-2.5-flash") 
     GOOGLE_API_KEY = st.secrets["GOOGLE_CUSTOM_SEARCH_API_KEY"]
     SEARCH_ENGINE_ID = st.secrets["SEARCH_ENGINE_ID"]
 except Exception as e:
