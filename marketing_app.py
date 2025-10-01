@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 import google.generativeai as genai
 from PIL import Image, ImageDraw, ImageFont
@@ -9,7 +8,7 @@ import database as db
 import re
 import streamlit.components.v1 as components # Import the components module
 
-# --- Google Analytics Integration ---
+# --- Google Analytics Integration (FIXED FOR STREAMLIT IFRAME) ---
 GA_MEASUREMENT_ID = "G-KR3JZ4DGY1"
 GA_CODE = f"""
 <script async src="https://www.googletagmanager.com/gtag/js?id={GA_MEASUREMENT_ID}"></script>
@@ -17,7 +16,11 @@ GA_CODE = f"""
   window.dataLayer = window.dataLayer || [];
   function gtag(){{dataLayer.push(arguments);}}
   gtag('js', new Date());
-  gtag('config', '{GA_MEASUREMENT_ID}');
+
+  // CRITICAL FIX: Add transport_type: 'iframe' for Streamlit Cloud deployment
+  gtag('config', '{GA_MEASUREMENT_ID}', {{
+      'transport_type': 'iframe' 
+  }});
 </script>
 """
 components.html(GA_CODE, height=0, width=0) # Embed the GA code at the top
@@ -32,7 +35,7 @@ st.set_page_config(
 # --- API Configuration & Models ---
 try:
     genai.configure(api_key=st.secrets["GEMINI_API_KEY"])
-    # --- FINAL CHANGE: Using the best free-tier model for deployment ---
+    # Keeping gemini-2.5-flash as requested (change to gemini-pro if 404 returns)
     text_model = genai.GenerativeModel("gemini-2.5-flash") 
     GOOGLE_API_KEY = st.secrets["GOOGLE_CUSTOM_SEARCH_API_KEY"]
     SEARCH_ENGINE_ID = st.secrets["SEARCH_ENGINE_ID"]
@@ -191,7 +194,10 @@ if st.session_state['logged_in']:
                     try:
                         image_context = Image.open(uploaded_image) if uploaded_image else None
                         model_input = [prompt, image_context] if image_context else [prompt]
+                        
+                        # --- THE GENERATION CALL ---
                         response = text_model.generate_content(model_input)
+                        # -------------------------
                         
                         parts = response.text.split("--- MARKETING TEXT KIT ---")
                         quote = parts[0].strip().replace("*", "")
@@ -240,7 +246,3 @@ if st.session_state['logged_in']:
                     st.write(item['image_prompt'])
                     st.subheader("Marketing Text Kit")
                     st.markdown(item['generated_text'])
-
-
-# The database.py file does not need modifications for this request.
-# The code below is included for completeness.
